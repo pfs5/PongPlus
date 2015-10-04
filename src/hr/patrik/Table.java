@@ -30,6 +30,10 @@ public class Table {
 	public int getY () {
 		return y;
 	}
+	
+	public int getdx() {
+		return (dxR+dxL);
+	}
 
 	public Image getImage () {
 		return image;
