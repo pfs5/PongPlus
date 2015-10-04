@@ -195,7 +195,7 @@ public class Board extends JPanel implements ActionListener{
 			if (state == STATE.END){
 				int key = e.getKeyCode();
 				if (key == KeyEvent.VK_ENTER)
-					initBoard();
+					initGame();
 			}
 		}
 	}
