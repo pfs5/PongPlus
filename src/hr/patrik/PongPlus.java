@@ -12,6 +12,17 @@ public class PongPlus extends JFrame {
 		END
 	}
 	
+	public enum DIR {
+		N,
+		NE,
+		E,
+		SE,
+		S,
+		SW,
+		W,
+		NW
+		}
+	
 	private final int WIDTH = 500;
 	private final int HEIGHT = 800;
 	

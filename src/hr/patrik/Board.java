@@ -11,6 +11,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
+import java.util.ArrayList;
 
 import javax.swing.ImageIcon;
 import javax.swing.JPanel;
@@ -38,6 +39,8 @@ public class Board extends JPanel implements ActionListener{
 	Image tableImage;
 	Image edgeImage;
 	Table table;
+	
+	ArrayList<Ball> balls;
 	
 	public Board (int WIDTH, int HEIGHT) {
 		this.WIDTH = WIDTH;
@@ -68,6 +71,7 @@ public class Board extends JPanel implements ActionListener{
 		tableX = TABLE_X;
 		tableY = TABLE_Y;
 		table = new Table(tableX, tableY);
+		balls = new ArrayList<Ball>();
 		
 		ImageIcon ii = new ImageIcon(getClass().getResource("/resources/frame.png"));
 		edgeImage = ii.getImage();
@@ -91,11 +95,22 @@ public class Board extends JPanel implements ActionListener{
 	}
 	
 	public void paintGame (Graphics2D g2d) {
+		
+		//Draw table
 		tableX = table.getX();
 		tableY = table.getY();
 		tableImage = table.getImage();
 		
 		g2d.drawImage(tableImage, tableX, tableY, this);
+	
+		//Draw balls
+		for (Ball current : balls) {
+			int ballX = current.getX();
+			int ballY = current.getY();
+			Image ballImage = current.getImage();
+			
+			g2d.drawImage(ballImage, ballX, ballY, this);
+		}
 	}
 	
 	public void paintPause (Graphics2D g2d) {
@@ -138,6 +153,8 @@ public class Board extends JPanel implements ActionListener{
 		
 		//Move sprites
 		table.move();
+		for (Ball current : balls)
+			current.move();
 		
 		repaint();
 	}
@@ -153,9 +170,22 @@ public class Board extends JPanel implements ActionListener{
 		
 		@Override
 		public void keyPressed (KeyEvent e) {
-			if (state == STATE.GAME) 
+			if (state == STATE.GAME) { 
+				int key = e.getKeyCode();
+				if (key == KeyEvent.VK_SPACE)
+					addBall();
 				table.keyPressed(e);
+			}
 		}
+	}
+	
+	public void addBall () {
+		
+		tableX = table.getX();
+		tableY = table.getY();
+		
+		Ball newBall = new Ball(WIDTH/2, 0, tableX, tableY, tableImage.getWidth(null));
+		balls.add(newBall);
 	}
 
 }
