@@ -1,5 +1,14 @@
 package hr.patrik;
 
+/*
+ * 
+ * TODO
+ * mijenjanje smijera
+ * 
+ * 
+ * 
+ */
+
 import hr.patrik.PongPlus.STATE;
 
 import java.awt.Color;
@@ -21,10 +30,15 @@ public class Board extends JPanel implements ActionListener{
 
 	private int WIDTH;
 	private int HEIGHT;
-	private int DELAY = 5;
+	private int DELAY = 3;
+
 	private int CLOCK;
 	private int TIME;
 	private int SCORE;
+	private int BALL_NUMBER;
+	private int BALL_CLOCK;
+	private int BALL_PERIOD = 1000;
+
 	private STATE state;
 
 	private int TABLE_H = 15;
@@ -65,6 +79,8 @@ public class Board extends JPanel implements ActionListener{
 		CLOCK = 0;
 		TIME = 0;
 		SCORE = 0;
+		BALL_NUMBER = 0;
+		BALL_CLOCK = BALL_PERIOD;
 		state = STATE.GAME;
 
 		TABLE_Y = HEIGHT - TABLE_H - 60;
@@ -136,18 +152,30 @@ public class Board extends JPanel implements ActionListener{
 		g2d.drawImage(edgeImage, edgeX, edgeY, this);
 
 		//Text
-		int scoreX = 80;
-		int scoreY = 30;
-
 		Font font = new Font("MonoSpaced", Font.PLAIN, 18);
 		g2d.setColor(Color.WHITE);
 		g2d.setFont(font);
+
+		int scoreX = 60;
+		int scoreY = 30;
 		g2d.drawString("SCORE:  " + SCORE, scoreX, scoreY);
 
-		int timeX = 300;
-		int timeY = 30;
+		int ballCountX = scoreX+150;	
+		int ballCountY = 30;
+		g2d.drawString(BALL_NUMBER + "x", ballCountX, ballCountY);
 
+		int timeX = scoreX+220;
+		int timeY = 30;
 		g2d.drawString("TIME:  " + TIME, timeX, timeY);
+
+		//Ball ready
+		int ballReadyX = scoreX+350;
+		int ballReadyY = 17;
+		ImageIcon ii = new ImageIcon(getClass().getResource("/resources/ball.png"));
+		Image ballImage = ii.getImage();
+		if (BALL_CLOCK>BALL_PERIOD)
+			g2d.drawImage(ballImage, ballReadyX, ballReadyY, this);
+
 	}
 
 	////////////////////////////	PERIODIC ACTION		//////////////////
@@ -156,6 +184,7 @@ public class Board extends JPanel implements ActionListener{
 		if (state==STATE.GAME) {
 			//Time
 			CLOCK++;
+			BALL_CLOCK++;
 			TIME = CLOCK*DELAY/1000;
 
 			//Move sprites
@@ -166,7 +195,7 @@ public class Board extends JPanel implements ActionListener{
 				current.move();
 				if (current.isHit()==1) {
 					current.reset();
-					SCORE++;
+					SCORE+=BALL_NUMBER;
 				}
 			}
 			removeBall();
@@ -194,7 +223,7 @@ public class Board extends JPanel implements ActionListener{
 			}
 			if (state == STATE.END){
 				int key = e.getKeyCode();
-				if (key == KeyEvent.VK_ENTER)
+				if (key == KeyEvent.VK_SPACE)
 					initGame();
 			}
 		}
@@ -202,11 +231,15 @@ public class Board extends JPanel implements ActionListener{
 
 	public void addBall () {
 
-		tableX = table.getX();
-		tableY = table.getY();
+		if (BALL_CLOCK>BALL_PERIOD) {
+			tableX = table.getX();
+			tableY = table.getY();
 
-		Ball newBall = new Ball(WIDTH/2, 0, tableImage.getWidth(null), tableImage.getHeight(null), WIDTH);
-		balls.add(newBall);
+			Ball newBall = new Ball(WIDTH/2, 0, tableImage.getWidth(null), tableImage.getHeight(null), WIDTH);
+			balls.add(newBall);
+			BALL_NUMBER++;
+			BALL_CLOCK = 0;
+		}
 	}
 
 	public void removeBall () {

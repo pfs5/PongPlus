@@ -9,7 +9,7 @@ import javax.swing.ImageIcon;
 
 public class Ball {
 
-	private int PERIOD = 1;
+	private int PERIOD = 2;
 	private int EDGE = 50;
 
 	private int x;
@@ -28,6 +28,8 @@ public class Ball {
 
 	private int hit;
 	private int visible;
+	private int reset;
+	private int nextImage;
 	
 	private DIR direction;
 	private int CLOCK;
@@ -43,6 +45,8 @@ public class Ball {
 		
 		hit = 0;
 		visible = 1;
+		reset = 0;
+		nextImage = 0;
 		CLOCK = 0;
 
 		random = new Random();
@@ -100,6 +104,45 @@ public class Ball {
 			x+= dx;
 			y+= dy;
 		}
+		
+		if (nextImage!=0)
+			nextImage++;
+		
+		blink();
+	}
+	
+	public void blink() {
+		if (nextImage==100) {
+			ImageIcon ii = new ImageIcon(getClass().getResource("/resources/ball_inv.png"));
+			image = ii.getImage();
+		}
+		
+		if (nextImage==200) {
+			ImageIcon ii = new ImageIcon(getClass().getResource("/resources/ball.png"));
+			image = ii.getImage();
+		}
+		
+		if (nextImage==300) {
+			ImageIcon ii = new ImageIcon(getClass().getResource("/resources/ball_inv.png"));
+			image = ii.getImage();
+		}
+		
+		if (nextImage==400) {
+			ImageIcon ii = new ImageIcon(getClass().getResource("/resources/ball.png"));
+			image = ii.getImage();
+		}
+		
+		if (nextImage==500) {
+			ImageIcon ii = new ImageIcon(getClass().getResource("/resources/ball_inv.png"));
+			image = ii.getImage();
+		}
+		
+		if (nextImage==600) {
+			ImageIcon ii = new ImageIcon(getClass().getResource("/resources/ball.png"));
+			image = ii.getImage();
+			nextImage = 0;
+		}
+		
 	}
 
 	public void checkCollision () {
@@ -130,15 +173,36 @@ public class Ball {
 				if (tabledx == -1)
 					direction = DIR.NW;
 				else if (tabledx == 0)
+					if (reset == 0)
 					direction = DIR.N;
+					else {
+						int directionIndex = random.nextInt(2);
+						if (directionIndex==0)
+							direction = DIR.NW;
+						if (directionIndex==1)
+							direction = DIR.NE;
+						reset = 0;
+					}
 				else if (tabledx == 1)
 					direction = DIR.NE;
 			}
 		}
-		
 		if (direction == DIR.N) {
-			if (newY<EDGE)				//top side
-				direction = DIR.S;
+			if (newY<EDGE) {				//top side
+				if (reset == 0) {
+					direction = DIR.S;
+					reset = 1;
+					nextImage = 1;
+				}
+				else {
+					int directionIndex = random.nextInt(2);
+					if (directionIndex==0)
+						direction = DIR.SW;
+					if (directionIndex==1)
+						direction = DIR.SE;
+					reset = 0;
+				}
+			}
 		}
 		
 		if (direction == DIR.SE) {
@@ -149,7 +213,7 @@ public class Ball {
 				if (tabledx == -1)
 					direction = DIR.N;
 				else if (tabledx == 0)
-					direction = DIR.NW;
+					direction = DIR.NE;
 				else if (tabledx == 1)
 					direction = DIR.NE;
 			}
@@ -165,7 +229,7 @@ public class Ball {
 				if (tabledx == -1)
 					direction = DIR.NW;
 				else if (tabledx == 0)
-					direction = DIR.NE;
+					direction = DIR.NW;
 				else if (tabledx == 1)
 					direction = DIR.N;
 			}
